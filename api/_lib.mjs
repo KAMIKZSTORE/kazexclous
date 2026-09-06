@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { put, list, del } from '@vercel/blob';
+import { put, list } from '@vercel/blob';
 
 const DB_PATH = 'db/testimoni.json';
 const ADMIN_USER = process.env.ADMIN_USER || 'kazex';
@@ -27,12 +27,16 @@ export async function readJson(req) {
 function sign(exp) {
   return crypto.createHmac('sha256', SECRET).update(String(exp)).digest('hex');
 }
-export function makeCookie() {
+
+// Secure hanya di https — supaya cookie tetap jalan saat tes di localhost / vercel dev
+export function makeCookie(req) {
   const exp = Date.now() + 7 * 24 * 3600 * 1000; // 7 hari
-  return `kazex_admin=${exp}.${sign(exp)}; HttpOnly; Path=/; SameSite=Lax; Secure; Max-Age=604800`;
+  const proto = String(req.headers['x-forwarded-proto'] || 'https').split(',')[0];
+  const secure = proto === 'https' ? '; Secure' : '';
+  return `kazex_admin=${exp}.${sign(exp)}; HttpOnly; Path=/; SameSite=Lax${secure}; Max-Age=604800`;
 }
 export function clearCookie() {
-  return 'kazex_admin=; HttpOnly; Path=/; SameSite=Lax; Secure; Max-Age=0';
+  return 'kazex_admin=; HttpOnly; Path=/; SameSite=Lax; Max-Age=0';
 }
 export function isAdmin(req) {
   const raw = (req.headers.cookie || '').split(/;\s*/).find(v => v.startsWith('kazex_admin='));
@@ -51,7 +55,7 @@ export function checkCredentials(u, p) {
 export function blobReady() { return Boolean(process.env.BLOB_READ_WRITE_TOKEN); }
 
 export async function dbRead() {
-  if (!blobReady()) return [];
+  if (!blobReady()) throw new Error('NO_BLOB');
   const { blobs } = await list({ prefix: DB_PATH });
   const b = blobs.sort((a, z) => new Date(z.uploadedAt) - new Date(a.uploadedAt))[0];
   if (!b) return [];
@@ -69,20 +73,13 @@ export async function dbWrite(items) {
   });
 }
 
-/* ---------- foto testimoni -> folder /testi/ di Blob ---------- */
-export async function saveImage(dataUrl) {
-  const m = /^data:(image\/(?:jpeg|jpg|png|webp|gif|avif));base64,([A-Za-z0-9+/=]+)$/.exec(dataUrl || '');
-  if (!m) throw new Error('FORMAT_FOTO');
-  const buf = Buffer.from(m[2], 'base64');
-  if (buf.length > 4 * 1024 * 1024) throw new Error('FOTO_TERLALU_BESAR');
-  const ext = m[1].split('/')[1].replace('jpeg', 'jpg');
-  const name = `testi/testi_${crypto.randomBytes(6).toString('hex')}.${ext}`;
-  const b = await put(name, buf, { access: 'public', contentType: m[1], addRandomSuffix: false });
-  return b.url;
-}
-export async function deleteImage(url) {
-  if (!url || typeof url !== 'string' || !/^https:\/\//.test(url)) return;
-  try { await del(url); } catch {}
+/* ---------- validasi link media (URL gambar) ---------- */
+export function validImgUrl(u) {
+  if (typeof u !== 'string' || !u.trim()) return false;
+  try {
+    const url = new URL(u.trim());
+    return url.protocol === 'https:' || url.protocol === 'http:';
+  } catch { return false; }
 }
 
 /* ---------- id & kode share 16 digit ---------- */
