@@ -11,7 +11,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
-  :root{--ink:#163B54;--ink2:#51708A;--accent:#1F6E9C;--card:rgba(255,255,255,.74)}
+  :root{--ink:#163B54;--ink2:#46647D;--accent:#1F6E9C;--card:rgba(255,255,255,.78)}
   body{font-family:'Zen Maru Gothic',sans-serif;color:var(--ink);overflow-x:hidden;
     background:linear-gradient(180deg,#C9E5F7 0%,#E4F3FC 55%,#F9FDFF 100%);-webkit-font-smoothing:antialiased}
   ::selection{background:#BFE0F3}
@@ -20,7 +20,7 @@
     background:radial-gradient(circle,#FFF6DC 0%,rgba(255,246,220,.5) 42%,rgba(255,246,220,0) 70%)}
   .kanji{position:fixed;top:4%;right:-7%;z-index:1;pointer-events:none;user-select:none;font-weight:900;
     font-size:min(58vw,500px);line-height:1;color:rgba(31,110,156,.05);-webkit-text-stroke:1.5px rgba(31,110,156,.10)}
-  .wrap{position:relative;z-index:2;max-width:480px;min-height:100vh;min-height:100svh;margin:0 auto;
+  .wrap{position:relative;z-index:2;max-width:980px;min-height:100vh;min-height:100svh;margin:0 auto;
     padding:20px 20px 44px;display:flex;flex-direction:column}
   header{display:flex;align-items:center;justify-content:space-between}
   main{flex:1;display:flex;flex-direction:column;gap:16px;padding:26px 0 30px}
@@ -36,6 +36,7 @@
   .brand{display:flex;align-items:center;gap:9px;font-size:11px;font-weight:900;letter-spacing:.26em;color:var(--accent)}
   .brand i{font-size:15px;animation:bob 4s ease-in-out infinite}
 
+  .hero,.back-all{width:100%;max-width:640px;margin-inline:auto}
   .hero{text-align:center;background:var(--card);border:1px solid rgba(255,255,255,.9);border-radius:28px;
     padding:28px 20px 24px;box-shadow:0 18px 44px -20px rgba(23,74,110,.38);backdrop-filter:blur(16px) saturate(1.15)}
   .eyebrow{font-size:10.5px;font-weight:700;letter-spacing:.4em;color:#7FA5BF;padding-left:.4em}
@@ -52,44 +53,116 @@
     font-weight:900;font-size:14px;text-decoration:none;transition:.2s}
   .back-all:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px)}
 
-  .grid{display:flex;flex-direction:column;gap:14px}
-  .tcard{display:flex;gap:14px;padding:18px;border-radius:20px;background:var(--card);
-    border:1px solid rgba(255,255,255,.9);box-shadow:0 12px 28px -18px rgba(23,74,110,.4);
-    backdrop-filter:blur(10px);transition:transform .25s}
-  .tcard:hover{transform:translateY(-3px)}
-  .ava{width:52px;height:52px;border-radius:16px;overflow:hidden;flex:none;display:grid;place-items:center;
+  /* ============================================================
+     GRID: SELALU 2 KARTU PER BARIS (desktop & HP)
+     Tinggi kedua kartu dalam satu baris dibuat SAMA (stretch).
+     ============================================================ */
+  .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+  /* Mode share link (1 testi) → satu kartu di tengah */
+  .grid.single{grid-template-columns:minmax(0,560px);justify-content:center}
+
+  .tcard{padding:16px 16px 18px;border-radius:24px;background:var(--card);
+    border:1px solid rgba(255,255,255,.92);box-shadow:0 16px 36px -20px rgba(23,74,110,.45);
+    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);transition:transform .25s,box-shadow .25s;
+    display:flex;flex-direction:column;min-width:0}
+  .tcard:hover{transform:translateY(-3px);box-shadow:0 24px 44px -20px rgba(23,74,110,.55)}
+
+  /* --- Media --- */
+  .media{position:relative;border-radius:18px;overflow:hidden;margin-bottom:14px;cursor:zoom-in;
+    background:linear-gradient(150deg,#E7F4FC,#CFE7F7);border:1px solid rgba(255,255,255,.95);
+    box-shadow:0 12px 28px -16px rgba(23,74,110,.5)}
+  .media img{display:block;width:100%;aspect-ratio:16/10;max-height:360px;object-fit:cover;
+    opacity:0;transition:opacity .5s,transform .6s cubic-bezier(.2,.8,.3,1)}
+  .media img.ok{opacity:1}
+  .tcard:hover .media img.ok{transform:scale(1.025)}
+  .media .zoom{position:absolute;right:12px;bottom:12px;width:36px;height:36px;border-radius:12px;
+    background:rgba(255,255,255,.88);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+    color:var(--accent);display:grid;place-items:center;font-size:14px;
+    border:1px solid rgba(255,255,255,.95);box-shadow:0 8px 18px -8px rgba(23,74,110,.5);
+    opacity:0;transform:translateY(6px);transition:.25s}
+  .tcard:hover .media .zoom{opacity:1;transform:none}
+  .media .cap{position:absolute;left:12px;bottom:12px;padding:5px 12px;border-radius:99px;
+    background:rgba(255,255,255,.85);backdrop-filter:blur(6px);font-size:10px;font-weight:900;
+    letter-spacing:.12em;color:var(--accent)}
+
+  /* --- Rating & deskripsi --- */
+  .stars{color:#E8A33D;font-size:13px;letter-spacing:3px;margin:0 2px 8px}
+  .desc{font-size:14.5px;line-height:1.8;color:#2A4763;font-weight:500;
+    overflow-wrap:break-word;text-align:left;margin:0 2px 16px;flex:1}
+
+  /* --- Footer kartu (menempel di dasar kartu) --- */
+  .foot{display:flex;align-items:center;gap:12px;padding:13px 2px 0;margin-top:auto;
+    border-top:1px dashed rgba(31,110,156,.22)}
+  .ava{width:42px;height:42px;border-radius:14px;overflow:hidden;flex:none;display:grid;place-items:center;
     background:linear-gradient(160deg,#F2FAFE,#D6ECFA);border:1px solid #fff;color:var(--accent);
-    font-weight:900;font-size:20px;box-shadow:0 8px 18px -10px rgba(23,74,110,.4)}
+    font-weight:900;font-size:17px;box-shadow:0 8px 18px -10px rgba(23,74,110,.45)}
   .ava img{width:100%;height:100%;object-fit:cover}
-  .body{flex:1;min-width:0}
-  .meta{display:flex;justify-content:space-between;align-items:center;gap:8px}
-  .meta .who{display:flex;align-items:baseline;gap:8px;min-width:0}
-  .meta b{font-size:15px}
-  .meta span{font-size:10.5px;color:#8FB3CA;font-weight:700;letter-spacing:.04em;flex:none}
-  .share{width:30px;height:30px;border-radius:9px;border:1px solid rgba(31,110,156,.18);background:#fff;
+  .who{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+  .who b{font-size:14px;letter-spacing:.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .who span{font-size:10.5px;color:#8FB3CA;font-weight:700;letter-spacing:.05em}
+  .share{width:34px;height:34px;border-radius:11px;border:1px solid rgba(31,110,156,.18);background:#fff;
     color:var(--accent);cursor:pointer;font-size:12px;flex:none;display:grid;place-items:center;transition:.2s}
   .share:hover{background:var(--accent);color:#fff}
   .share:active{transform:scale(.9)}
-  .stars{color:#E8A33D;font-size:11px;letter-spacing:2.5px;margin:3px 0 6px}
-  .tcard p{font-size:13px;line-height:1.75;color:var(--ink2);word-wrap:break-word}
 
-  .skel{height:112px;border-radius:20px;background:linear-gradient(100deg,#EAF4FB 40%,#F8FCFE 50%,#EAF4FB 60%);
+  .skel{height:320px;border-radius:24px;background:linear-gradient(100deg,#EAF4FB 40%,#F8FCFE 50%,#EAF4FB 60%);
     background-size:200% 100%;animation:sh 1.2s infinite}
   @keyframes sh{to{background-position:-200% 0}}
-  .empty{text-align:center;color:#8FB3CA;font-size:13px;font-weight:700;padding:30px 0;line-height:2;
-    background:var(--card);border:1px dashed rgba(31,110,156,.25);border-radius:20px}
-  .empty i{font-size:28px;display:block;margin-bottom:6px;color:#9FC3DB}
+  .empty{text-align:center;color:#8FB3CA;font-size:13px;font-weight:700;padding:34px 20px;line-height:2.1;
+    background:var(--card);border:1px dashed rgba(31,110,156,.25);border-radius:24px;grid-column:1/-1}
+  .empty i{font-size:30px;display:block;margin-bottom:8px;color:#9FC3DB}
+
+  /* ================= LIGHTBOX ================= */
+  .lb{position:fixed;inset:0;z-index:90;background:rgba(12,38,58,.88);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    display:grid;place-items:center;padding:22px;opacity:0;pointer-events:none;transition:opacity .3s}
+  .lb.show{opacity:1;pointer-events:auto}
+  .lb img{max-width:100%;max-height:86vh;border-radius:18px;border:1px solid rgba(255,255,255,.35);
+    box-shadow:0 30px 90px rgba(0,0,0,.55);transform:scale(.94);transition:transform .3s cubic-bezier(.2,.8,.3,1)}
+  .lb.show img{transform:scale(1)}
+  .lb .close{position:absolute;top:18px;right:18px;width:44px;height:44px;border-radius:50%;border:0;cursor:pointer;
+    background:rgba(255,255,255,.14);color:#fff;font-size:17px;display:grid;place-items:center;transition:.2s}
+  .lb .close:hover{background:rgba(255,255,255,.28)}
 
   footer{padding-top:6px;text-align:center}
   .web-pill{display:inline-flex;align-items:center;gap:10px;padding:9px 18px;border-radius:999px;background:var(--accent);
     color:#fff;font-weight:700;font-size:13px;text-decoration:none;box-shadow:0 16px 30px -14px rgba(31,110,156,.65)}
   .web-pill:hover{background:#185C85}
   .credit{margin-top:13px;font-size:11px;letter-spacing:.14em;color:#8FB3CA}
-  .toast{position:fixed;z-index:70;left:50%;bottom:30px;display:flex;align-items:center;gap:9px;
+  .toast{position:fixed;z-index:95;left:50%;bottom:30px;display:flex;align-items:center;gap:9px;
     transform:translate(-50%,16px);opacity:0;pointer-events:none;background:var(--ink);color:#fff;
     padding:11px 18px;border-radius:999px;font-size:13px;font-weight:700;transition:opacity .35s,transform .35s}
   .toast.show{opacity:1;transform:translate(-50%,0)}
   .toast i{color:#8FE3B4}
+
+  /* ============================================================
+     HP: TETAP 2 KARTU PER BARIS — ukuran dipadatkan agar muat
+     ============================================================ */
+  @media (max-width:700px){
+    .wrap{max-width:600px;padding:16px 12px 40px}
+    .grid{gap:10px}
+    .tcard{padding:10px 10px 12px;border-radius:18px}
+    .media{border-radius:12px;margin-bottom:9px}
+    .media img{aspect-ratio:1/1;max-height:none}
+    .media .zoom{right:8px;bottom:8px;width:26px;height:26px;font-size:10px;border-radius:8px}
+    .media .cap{left:8px;bottom:8px;padding:3px 9px;font-size:8.5px}
+    .stars{font-size:11px;letter-spacing:2px;margin:0 0 6px}
+    .desc{font-size:12px;line-height:1.7;margin:0 0 10px}
+    .foot{gap:8px;padding-top:9px}
+    .ava{width:30px;height:30px;border-radius:9px;font-size:13px}
+    .who b{font-size:12px}
+    .who span{font-size:9px}
+    .share{width:27px;height:27px;font-size:10px;border-radius:8px}
+    .skel{height:250px;border-radius:18px}
+    .hero{padding:22px 16px 20px;border-radius:22px}
+    h1{font-size:clamp(30px,9vw,40px)}
+  }
+  /* HP super kecil (<360px): lebih padat lagi, tetap 2 kolom */
+  @media (max-width:359px){
+    .grid{gap:7px}
+    .desc{font-size:11px}
+    .stars{font-size:10px}
+  }
   @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reveal{opacity:1}}
 </style>
 </head>
@@ -118,7 +191,7 @@
     </a>
 
     <section id="list" class="grid" aria-live="polite">
-      <div class="skel"></div><div class="skel"></div><div class="skel"></div>
+      <div class="skel"></div><div class="skel"></div>
     </section>
   </main>
 
@@ -128,12 +201,17 @@
   </footer>
 </div>
 
+<!-- Lightbox foto -->
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Lihat foto">
+  <button class="close" id="lbClose" aria-label="Tutup"><i class="fa-solid fa-xmark"></i></button>
+  <img id="lbImg" alt="Foto testimoni diperbesar">
+</div>
+
 <div class="toast" id="toast" role="status"></div>
 
 <script type="module">
   /* ============================================================
-     ⚙️ TEMPEL firebaseConfig DARI FIREBASE CONSOLE DI SINI
-     (Project settings → General → Your apps → Web app)
+     CONFIG FIREBASE
      ============================================================ */
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
   import {
@@ -141,21 +219,21 @@
   } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
   const firebaseConfig = {
-  apiKey: "AIzaSyBOL6ZO348OiF6nz0_mBDKMEYI-Lr9tsag",
-  authDomain: "aetherid-5555.firebaseapp.com",
-  databaseURL: "https://aetherid-5555-default-rtdb.firebaseio.com",
-  projectId: "aetherid-5555",
-  storageBucket: "aetherid-5555.firebasestorage.app",
-  messagingSenderId: "447170561051",
-  appId: "1:447170561051:web:ffe54a15d8af3c74b724be",
-  measurementId: "G-51X5P92VNM"
-};
+    apiKey:            "AIzaSyBOL6ZO348OiF6nz0_mBDKMEYI-Lr9tsag",
+    authDomain:        "aetherid-5555.firebaseapp.com",
+    databaseURL:       "https://aetherid-5555-default-rtdb.firebaseio.com",
+    projectId:         "aetherid-5555",
+    storageBucket:     "aetherid-5555.firebasestorage.app",
+    messagingSenderId: "447170561051",
+    appId:             "1:447170561051:web:ffe54a15d8af3c74b724be",
+    measurementId:     "G-51X5P92VNM"
+  };
   /* ================== AKHIR KONFIG ================== */
 
   const app = initializeApp(firebaseConfig);
   const db  = getFirestore(app);
 
-  /* ===== Langit awan (versi ringan) ===== */
+  /* ===== Langit awan ===== */
   const cv = document.getElementById('sky'), g = cv.getContext('2d');
   const rm = matchMedia('(prefers-reduced-motion: reduce)').matches;
   let W = 0, H = 0;
@@ -203,10 +281,13 @@
   }
   requestAnimationFrame(t => { last = t; fr(t); });
 
-  /* ===== Render ===== */
+  /* ===== Data & render ===== */
   const list = document.getElementById('list');
   const countTxt = document.getElementById('countTxt');
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+  /* Enter (\n) dari admin dikonversi jadi <br> — baris tampil persis seperti diketik */
+  const escBr = s => esc(s).replace(/\r?\n/g, '<br>');
 
   const qs = new URLSearchParams(location.search);
   const shareCode = qs.get('share') || qs.get('code') ||
@@ -237,25 +318,47 @@
     if(b) copyLink(b.dataset.code);
   });
 
+  /* ===== Lightbox ===== */
+  const lb = document.getElementById('lb'), lbImg = document.getElementById('lbImg');
+  function openLb(src){ lbImg.src = src; lb.classList.add('show'); document.body.style.overflow = 'hidden'; }
+  function closeLb(){ lb.classList.remove('show'); document.body.style.overflow = ''; lbImg.removeAttribute('src'); }
+  list.addEventListener('click', e => {
+    const m = e.target.closest('.media');
+    if(m && m.dataset.src) openLb(m.dataset.src);
+  });
+  document.getElementById('lbClose').addEventListener('click', closeLb);
+  lb.addEventListener('click', e => { if(e.target === lb) closeLb(); });
+  addEventListener('keydown', e => { if(e.key === 'Escape') closeLb(); });
+
   function stars(r){
     let s = '';
     for(let i = 1; i <= 5; i++) s += '<i class="fa-' + (i <= r ? 'solid' : 'regular') + ' fa-star"></i>';
     return s;
   }
+
   function card(it, i){
     const d = new Date(it.time||0).toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'});
     const ini = esc((it.name||'?').trim().charAt(0).toUpperCase());
-    return '<article class="tcard reveal" style="--d:' + Math.min(.4, i*.08).toFixed(2) + 's">' +
-      '<div class="ava" data-ini="' + ini + '">' +
-        (it.img ? '<img src="' + esc(it.img) + '" alt="" loading="lazy">' : ini) +
+    const media = it.img
+      ? '<div class="media" data-src="' + esc(it.img) + '" role="button" aria-label="Perbesar foto" tabindex="0">' +
+          '<img src="' + esc(it.img) + '" alt="Foto testimoni ' + esc(it.name) + '" loading="lazy">' +
+          '<span class="cap">BUKTI</span>' +
+          '<span class="zoom"><i class="fa-solid fa-expand"></i></span>' +
+        '</div>'
+      : '';
+    return '<article class="tcard reveal" style="--d:' + Math.min(.4, i*.06).toFixed(2) + 's">' +
+      media +
+      '<div class="stars">' + stars(Math.abs(it.rating|0) || 5) + '</div>' +
+      '<p class="desc">' + escBr(it.desc) + '</p>' +
+      '<div class="foot">' +
+        '<div class="ava" data-ini="' + ini + '">' + ini + '</div>' +
+        '<div class="who"><b>' + esc(it.name) + '</b><span>' + d + '</span></div>' +
+        '<button class="share" data-code="' + esc(it.code) + '" title="Salin link testimoni" aria-label="Salin link testimoni"><i class="fa-solid fa-link"></i></button>' +
       '</div>' +
-      '<div class="body">' +
-        '<div class="meta"><span class="who"><b>' + esc(it.name) + '</b><span>' + d + '</span></span>' +
-          '<button class="share" data-code="' + esc(it.code) + '" title="Salin link testimoni" aria-label="Salin link testimoni"><i class="fa-solid fa-link"></i></button>' +
-        '</div>' +
-        '<div class="stars">' + stars(Math.abs(it.rating|0) || 5) + '</div>' +
-        '<p>' + esc(it.desc) + '</p>' +
-      '</div></article>';
+    '</article>';
+  }
+  function fixMedia(){
+    list.querySelectorAll('.media img').forEach(im => im.addEventListener('load', () => im.classList.add('ok')));
   }
   function fixAvatars(){
     list.querySelectorAll('.ava img').forEach(im => im.addEventListener('error', () => {
@@ -269,6 +372,7 @@
       const col = collection(db, 'testimoni');
 
       if(shareCode){
+        list.classList.add('single'); // 1 testi di tengah
         const snap = await getDocs(query(col, where('code','==',shareCode), limit(1)));
         document.getElementById('shareBar').hidden = false;
         if(snap.empty){
@@ -280,7 +384,7 @@
         const it = { id: snap.docs[0].id, ...snap.docs[0].data() };
         countTxt.textContent = 'Testimoni pilihan';
         list.innerHTML = card(it, 0);
-        fixAvatars();
+        fixMedia(); fixAvatars();
         return;
       }
 
@@ -292,7 +396,7 @@
         return;
       }
       list.innerHTML = items.map(card).join('');
-      fixAvatars();
+      fixMedia(); fixAvatars();
     }catch(err){
       console.error(err);
       countTxt.textContent = 'Gagal memuat';
