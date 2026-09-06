@@ -113,7 +113,6 @@
       <span class="pill-count"><span class="dot"></span><span id="countTxt">Memuat…</span></span>
     </section>
 
-    <!-- muncul hanya di mode share/link -->
     <a id="shareBar" class="back-all reveal" style="--d:.18s" href="/testi/store/kazex" hidden>
       <i class="fa-solid fa-arrow-left"></i>Kembali ke Semua Testi
     </a>
@@ -131,11 +130,30 @@
 
 <div class="toast" id="toast" role="status"></div>
 
-<script>
-(() => {
-  'use strict';
+<script type="module">
+  /* ============================================================
+     ⚙️ TEMPEL firebaseConfig DARI FIREBASE CONSOLE DI SINI
+     (Project settings → General → Your apps → Web app)
+     ============================================================ */
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+  import {
+    getFirestore, collection, getDocs, query, orderBy, where, limit,
+  } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
-  /* ===== Langit (versi ringan) ===== */
+  const firebaseConfig = {
+    apiKey:            "PASTE_apiKey",
+    authDomain:        "PASTE_authDomain",
+    projectId:         "PASTE_projectId",
+    storageBucket:     "PASTE_storageBucket",
+    messagingSenderId: "PASTE_messagingSenderId",
+    appId:             "PASTE_appId",
+  };
+  /* ================== AKHIR KONFIG ================== */
+
+  const app = initializeApp(firebaseConfig);
+  const db  = getFirestore(app);
+
+  /* ===== Langit awan (versi ringan) ===== */
   const cv = document.getElementById('sky'), g = cv.getContext('2d');
   const rm = matchMedia('(prefers-reduced-motion: reduce)').matches;
   let W = 0, H = 0;
@@ -183,17 +201,14 @@
   }
   requestAnimationFrame(t => { last = t; fr(t); });
 
-  /* ===== Data & render ===== */
+  /* ===== Render ===== */
   const list = document.getElementById('list');
   const countTxt = document.getElementById('countTxt');
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-  // Deteksi mode share: /share/link/testi/123... atau ?share= / ?code= / ...code=123...
   const qs = new URLSearchParams(location.search);
   const shareCode = qs.get('share') || qs.get('code') ||
     ((location.pathname.match(/code=(\d{6,})/) || [])[1] || '');
-
-  const testiLink = code => location.origin + '/share/link/testi/' + code;
 
   let toastT;
   function toast(msg){
@@ -204,7 +219,7 @@
     toastT = setTimeout(() => t.classList.remove('show'), 2200);
   }
   async function copyLink(code){
-    const text = testiLink(code);
+    const text = location.origin + '/share/link/testi/' + code;
     try{ await navigator.clipboard.writeText(text); }
     catch(_){
       const ta = document.createElement('textarea');
@@ -240,52 +255,52 @@
         '<p>' + esc(it.desc) + '</p>' +
       '</div></article>';
   }
-
-  function renderAll(items){
-    countTxt.textContent = items.length + ' testimoni';
-    if(!items.length){
-      list.innerHTML = '<div class="empty"><i class="fa-regular fa-comment-dots"></i>Belum ada testimoni.<br>Segera hadir!</div>';
-      return;
-    }
-    list.innerHTML = items.map(card).join('');
+  function fixAvatars(){
     list.querySelectorAll('.ava img').forEach(im => im.addEventListener('error', () => {
       const w = im.parentElement;
       w.textContent = w.dataset.ini || '★';
     }));
   }
 
-  function renderOne(it){
-    countTxt.textContent = 'Testimoni pilihan';
-    list.innerHTML = card(it, 0);
-    const im = list.querySelector('.ava img');
-    if(im) im.addEventListener('error', () => { im.parentElement.textContent = im.parentElement.dataset.ini || '★'; });
-  }
-
-  function renderNotFound(){
-    countTxt.textContent = 'Link tidak valid';
-    list.innerHTML = '<div class="empty"><i class="fa-solid fa-link-slash"></i>' +
-      'Testimoni dengan kode ini tidak ditemukan.<br>Mungkin sudah dihapus.</div>';
-  }
-
   async function load(){
     try{
-      const url = shareCode ? '/api/testi?code=' + encodeURIComponent(shareCode) : '/api/testi';
-      const r = await fetch(url);
-      const j = await r.json();
+      const col = collection(db, 'testimoni');
+
       if(shareCode){
+        const snap = await getDocs(query(col, where('code','==',shareCode), limit(1)));
         document.getElementById('shareBar').hidden = false;
-        return j.ok && j.data && j.data.length ? renderOne(j.data[0]) : renderNotFound();
+        if(snap.empty){
+          countTxt.textContent = 'Link tidak valid';
+          list.innerHTML = '<div class="empty"><i class="fa-solid fa-link-slash"></i>' +
+            'Testimoni dengan kode ini tidak ditemukan.<br>Mungkin sudah dihapus.</div>';
+          return;
+        }
+        const it = { id: snap.docs[0].id, ...snap.docs[0].data() };
+        countTxt.textContent = 'Testimoni pilihan';
+        list.innerHTML = card(it, 0);
+        fixAvatars();
+        return;
       }
-      if(j && Array.isArray(j.data)) return renderAll(j.data);
-      throw new Error(j && j.error ? j.error : 'Gagal memuat');
+
+      const snap = await getDocs(query(col, orderBy('time','desc'), limit(200)));
+      const items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      countTxt.textContent = items.length + ' testimoni';
+      if(!items.length){
+        list.innerHTML = '<div class="empty"><i class="fa-regular fa-comment-dots"></i>Belum ada testimoni.<br>Segera hadir!</div>';
+        return;
+      }
+      list.innerHTML = items.map(card).join('');
+      fixAvatars();
     }catch(err){
+      console.error(err);
       countTxt.textContent = 'Gagal memuat';
-      list.innerHTML = '<div class="empty"><i class="fa-solid fa-cloud-showers-heavy"></i>' +
-        esc(err.message || 'Koneksi bermasalah.') + '<br>Coba muat ulang halaman.</div>';
+      const hint = String(err?.code || '').includes('permission-denied')
+        ? 'Firestore Rules belum diterapkan —<br>cek langkah 3 di panduan setup.'
+        : 'Koneksi bermasalah.<br>Coba muat ulang halaman.';
+      list.innerHTML = '<div class="empty"><i class="fa-solid fa-cloud-showers-heavy"></i>' + hint + '</div>';
     }
   }
   load();
-})();
 </script>
 </body>
 </html>
