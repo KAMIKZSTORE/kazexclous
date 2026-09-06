@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#C9E5F7" />
+<title>Team — KAZE X CLOUD</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cg fill='%232E7EA8'%3E%3Ccircle cx='24' cy='36' r='12'/%3E%3Ccircle cx='38' cy='29' r='15'/%3E%3Ccircle cx='49' cy='39' r='10'/%3E%3Crect x='14' y='33' width='40' height='15' rx='7.5'/%3E%3C/g%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --ink:#163B54; --ink2:#51708A; --accent:#1F6E9C;
+    --card:rgba(255,255,255,.74); --line:rgba(31,110,156,.18);
+  }
+  body{
+    font-family:'Zen Maru Gothic',sans-serif;color:var(--ink);overflow-x:hidden;
+    background:linear-gradient(180deg,#C9E5F7 0%,#E4F3FC 55%,#F9FDFF 100%);
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:#BFE0F3}
+  #sky{position:fixed;inset:0;width:100%;height:100%;z-index:0}
+  .sun{position:fixed;top:8%;left:7%;width:120px;height:120px;border-radius:50%;z-index:1;pointer-events:none;
+    background:radial-gradient(circle,#FFF6DC 0%,rgba(255,246,220,.5) 42%,rgba(255,246,220,0) 70%)}
+  .kanji{position:fixed;top:4%;right:-7%;z-index:1;pointer-events:none;user-select:none;font-weight:900;
+    font-size:min(58vw,500px);line-height:1;color:rgba(31,110,156,.05);-webkit-text-stroke:1.5px rgba(31,110,156,.10)}
+  .wrap{position:relative;z-index:2;max-width:480px;min-height:100vh;min-height:100svh;margin:0 auto;
+    padding:20px 20px 44px;display:flex;flex-direction:column}
+  header{display:flex;align-items:center;justify-content:space-between}
+  main{flex:1;display:flex;flex-direction:column;gap:16px;padding:26px 0 30px}
+  .reveal{animation:rise .8s var(--d,0s) cubic-bezier(.2,.7,.3,1) both}
+  @keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+  @keyframes pulse{from{transform:scale(.45);opacity:1}to{transform:scale(1.4);opacity:0}}
+
+  .icon-btn{width:46px;height:46px;border-radius:50%;cursor:pointer;display:grid;place-items:center;text-decoration:none;
+    background:var(--card);border:1px solid rgba(255,255,255,.9);color:var(--accent);font-size:16px;
+    box-shadow:0 10px 22px -12px rgba(23,74,110,.45);backdrop-filter:blur(10px);
+    transition:transform .25s,background .25s,color .25s}
+  .icon-btn:hover{background:var(--accent);color:#fff;transform:translateY(-2px)}
+  .brand{display:flex;align-items:center;gap:9px;font-size:11px;font-weight:900;letter-spacing:.26em;color:var(--accent)}
+  .brand i{font-size:15px;animation:bob 4s ease-in-out infinite}
+
+  /* ===== Hero ===== */
+  .hero{text-align:center;background:var(--card);border:1px solid rgba(255,255,255,.9);border-radius:28px;
+    padding:28px 20px 22px;box-shadow:0 18px 44px -20px rgba(23,74,110,.38);
+    backdrop-filter:blur(16px) saturate(1.15);-webkit-backdrop-filter:blur(16px) saturate(1.15)}
+  .eyebrow{font-size:10.5px;font-weight:700;letter-spacing:.4em;color:#7FA5BF;padding-left:.4em}
+  h1{font-weight:900;font-size:clamp(34px,9.5vw,46px);line-height:1.05;margin-top:6px}
+  h1 span{color:var(--accent)}
+  .jp{margin-top:8px;font-size:11.5px;font-weight:700;letter-spacing:.5em;padding-left:.5em;color:#7FA5BF}
+  .stats{display:flex;justify-content:center;gap:0;margin-top:18px;border-top:1px dashed rgba(31,110,156,.2);padding-top:16px}
+  .stats>div{flex:1;display:flex;flex-direction:column;gap:2px}
+  .stats>div+div{border-left:1px dashed rgba(31,110,156,.2)}
+  .stats b{font-size:20px;font-weight:900;color:var(--accent);font-variant-numeric:tabular-nums}
+  .stats span{font-size:10px;font-weight:700;letter-spacing:.18em;color:#7FA5BF}
+
+  /* ===== Kartu anggota ===== */
+  .grid{display:flex;flex-direction:column;gap:14px}
+  .mcard{display:flex;gap:14px;padding:18px;border-radius:20px;background:var(--card);
+    border:1px solid rgba(255,255,255,.9);box-shadow:0 12px 28px -18px rgba(23,74,110,.4);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transition:transform .25s,box-shadow .25s;position:relative}
+  .mcard:hover{transform:translateY(-3px);box-shadow:0 20px 36px -18px rgba(23,74,110,.5)}
+  .mcard.lead{border:1.5px solid rgba(31,110,156,.35)}
+  .ava{width:56px;height:56px;border-radius:18px;overflow:hidden;flex:none;display:grid;place-items:center;position:relative;
+    background:linear-gradient(160deg,#F2FAFE,#D6ECFA);border:1px solid #fff;color:var(--accent);
+    font-weight:900;font-size:22px;box-shadow:0 8px 18px -10px rgba(23,74,110,.4)}
+  .ava img{width:100%;height:100%;object-fit:cover}
+  .crown{position:absolute;top:-7px;right:-7px;width:24px;height:24px;border-radius:50%;
+    background:var(--accent);color:#fff;display:grid;place-items:center;font-size:10px;
+    border:2px solid #fff;box-shadow:0 4px 10px -3px rgba(31,110,156,.6);transform:rotate(12deg)}
+  .body{flex:1;min-width:0}
+  .meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+  .meta b{font-size:15.5px}
+  .role{font-size:9.5px;font-weight:900;letter-spacing:.08em;padding:3px 9px;border-radius:99px;
+    background:rgba(31,110,156,.1);color:var(--accent);text-transform:uppercase}
+  .mcard p{margin-top:6px;font-size:13px;line-height:1.7;color:var(--ink2);word-wrap:break-word}
+  .socials{display:flex;gap:8px;margin-top:12px}
+  .s-btn{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;text-decoration:none;
+    background:#fff;border:1px solid var(--line);color:var(--accent);font-size:14px;transition:.2s}
+  .s-btn:hover{transform:translateY(-2px)}
+  .s-btn:active{transform:scale(.92)}
+  .s-btn.wa:hover{background:#25D366;border-color:#25D366;color:#fff}
+  .s-btn.tg:hover{background:#229ED9;border-color:#229ED9;color:#fff}
+  .s-btn.web:hover{background:var(--accent);border-color:var(--accent);color:#fff}
+  .st{position:absolute;top:16px;right:16px;display:flex;align-items:center;gap:6px;
+    font-size:9.5px;font-weight:900;letter-spacing:.1em;color:#2FA36B}
+  .st.off{color:#9DB8CC}
+  .st i{width:8px;height:8px;border-radius:50%;background:currentColor;position:relative}
+  .st i::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:2px solid currentColor;opacity:.5;animation:pulse 1.8s ease-out infinite}
+  .st.off i::after{animation:none}
+
+  /* ===== CTA gabung ===== */
+  .join{text-align:center;background:var(--card);border:1px dashed rgba(31,110,156,.3);border-radius:22px;
+    padding:24px 20px;backdrop-filter:blur(10px)}
+  .join>i{font-size:26px;color:var(--accent);display:block;margin-bottom:8px;animation:bob 4s ease-in-out infinite}
+  .join b{font-size:15px}
+  .join p{margin-top:6px;font-size:12.5px;color:var(--ink2);line-height:1.7}
+  .join-btns{display:flex;gap:10px;justify-content:center;margin-top:14px;flex-wrap:wrap}
+  .join-btns a{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:999px;
+    font-size:13px;font-weight:900;text-decoration:none;transition:.2s}
+  .join-btns .b-wa{background:#25D366;color:#fff;box-shadow:0 12px 24px -12px rgba(37,211,102,.7)}
+  .join-btns .b-tg{background:#229ED9;color:#fff;box-shadow:0 12px 24px -12px rgba(34,158,217,.7)}
+  .join-btns a:hover{transform:translateY(-2px);filter:brightness(1.05)}
+  .join-btns a:active{transform:scale(.96)}
+
+  footer{padding-top:6px;text-align:center}
+  .web-pill{display:inline-flex;align-items:center;gap:10px;padding:9px 18px;border-radius:999px;background:var(--accent);
+    color:#fff;font-weight:700;font-size:13px;text-decoration:none;box-shadow:0 16px 30px -14px rgba(31,110,156,.65)}
+  .web-pill:hover{background:#185C85}
+  .credit{margin-top:13px;font-size:11px;letter-spacing:.14em;color:#8FB3CA}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reveal{opacity:1}}
+</style>
+</head>
+<body>
+
+<canvas id="sky" aria-hidden="true"></canvas>
+<div class="sun" aria-hidden="true"></div>
+<div class="kanji" aria-hidden="true">団</div>
+
+<div class="wrap">
+  <header class="reveal" style="--d:.05s">
+    <a class="icon-btn" href="/" aria-label="Kembali ke beranda"><i class="fa-solid fa-arrow-left"></i></a>
+    <div class="brand"><i class="fa-solid fa-cloud"></i>KAZE X CLOUD</div>
+  </header>
+
+  <main>
+    <section class="hero reveal" style="--d:.12s">
+      <p class="eyebrow">PROJECT · KAZEX</p>
+      <h1>OUR <span>TEAM</span></h1>
+      <p class="jp">私たちのチーム</p>
+      <div class="stats">
+        <div><b id="stMembers">0</b><span>ANGGOTA</span></div>
+        <div><b id="stOnline">0</b><span>ONLINE</span></div>
+        <div><b>24/7</b><span>AKTIF</span></div>
+      </div>
+    </section>
+
+    <section id="teamList" class="grid" aria-label="Daftar anggota tim"></section>
+
+    <section class="join reveal" style="--d:.3s">
+      <i class="fa-solid fa-hand-sparkles"></i>
+      <b>Mau bekerja sama dengan tim kami?</b>
+      <p>Hubungi kami kapan saja — konsultasi, order, atau sekadar menyapa.</p>
+      <div class="join-btns">
+        <a class="b-wa" href="https://wa.me/6285351952977" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i>WhatsApp</a>
+        <a class="b-tg" href="https://t.me/kazex_cs" target="_blank" rel="noopener"><i class="fa-brands fa-telegram"></i>Telegram</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="reveal" style="--d:.42s">
+    <a class="web-pill" href="/"><i class="fa-solid fa-globe"></i>www.kazexnxx.my.id</a>
+    <p class="credit">satukan langit, wujudkan ide — © KAZE X CLOUD</p>
+  </footer>
+</div>
+
+<script>
+(() => {
+  'use strict';
+
+  /* ============================================================
+     EDIT DATA TIM DI SINI — tinggal tambah/hapus objek di bawah
+     - img    : path foto (opsional, contoh 'assets/team/kaze.jpg').
+                Kosongkan '' untuk pakai inisial huruf otomatis.
+     - wa     : nomor WhatsApp internasional tanpa + (contoh '628…')
+     - tg     : username Telegram tanpa @
+     - web    : url website pribadi (opsional)
+     - lead   : true = dapat lencana mahkota (founder)
+     - online : true/false → indikator hijau / abu-abu
+     ============================================================ */
+  const TEAM = [
+    {
+      name: 'Kaze',
+      role: 'Founder · Lead Developer',
+      desc: 'Membangun KAZE X CLOUD dari nol — cloud, API, dan tools. Pemecah masalah yang nyaman dengan deadline.',
+      img: '',
+      wa: '6285351952977',
+      tg: 'kazex_cs',
+      web: 'https://www.kazexnxx.my.id',
+      lead: true,
+      online: true,
+    },
+    {
+      name: 'Rin',
+      role: 'UI/UX Designer',
+      desc: 'Perancang tampilan biru-langit yang kamu lihat sekarang. Detail adalah obsesinya.',
+      img: '',
+      wa: '',
+      tg: 'kazex_cs',
+      web: '',
+      online: true,
+    },
+    {
+      name: 'Souma',
+      role: 'Backend Engineer',
+      desc: 'Menjaga server tetap bertenaga dan API tetap cepat. Benchmarks adalah makanannya.',
+      img: '',
+      wa: '',
+      tg: 'kazex_cs',
+      web: '',
+      online: false,
+    },
+    {
+      name: 'Hana',
+      role: 'Customer Relations',
+      desc: 'Suara ramah di balik layanan — siap membantu kapan pun kamu butuh.',
+      img: '',
+      wa: '6285351952977',
+      tg: 'kazex_cs',
+      web: '',
+      online: true,
+    },
+  ];
+
+  /* ================= LANGIT AWAN ================= */
+  const cv = document.getElementById('sky'), g = cv.getContext('2d');
+  const rm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let W = 0, H = 0;
+  const rs = () => { const d = Math.min(devicePixelRatio||1,2); W = innerWidth; H = innerHeight;
+    cv.width = W*d; cv.height = H*d; g.setTransform(d,0,0,d,0,0); };
+  addEventListener('resize', rs); rs();
+
+  function spr(){
+    const w = 260 + Math.random()*160 | 0, h = 120 + Math.random()*60 | 0;
+    const c = document.createElement('canvas'); c.width = w; c.height = h;
+    const x = c.getContext('2d'), n = 8 + (Math.random()*4|0), base = h*.74;
+    for(let i = 0; i < n; i++){
+      const t = i/(n-1), px = w*.1 + t*w*.8, r = h*.14 + Math.sin(t*Math.PI)*h*.26 + Math.random()*h*.05;
+      const py = base - r*.75 - Math.random()*h*.07;
+      const gr = x.createRadialGradient(px,py,r*.2,px,py,r*1.35);
+      gr.addColorStop(0,'rgba(255,255,255,1)'); gr.addColorStop(.62,'rgba(255,255,255,.95)'); gr.addColorStop(1,'rgba(255,255,255,0)');
+      x.fillStyle = gr; x.beginPath(); x.arc(px,py,r*1.35,0,7); x.fill();
+    }
+    x.globalCompositeOperation = 'source-atop';
+    const sh = x.createLinearGradient(0,h*.5,0,h);
+    sh.addColorStop(0,'rgba(140,190,225,0)'); sh.addColorStop(1,'rgba(140,190,225,.4)');
+    x.fillStyle = sh; x.fillRect(0,0,w,h);
+    return c;
+  }
+  const cl = [];
+  [{n:4,z:.4,a:.5,s:[.5,.8],v:[6,12],y:[.05,.42]},{n:3,z:.8,a:.72,s:[.95,1.35],v:[12,20],y:[.08,.55]}].forEach(L => {
+    for(let i = 0; i < L.n; i++) cl.push({
+      p: spr(), z: L.z, a: L.a, sc: L.s[0]+Math.random()*(L.s[1]-L.s[0]),
+      x: Math.random()*(W+300)-150, y: H*(L.y[0]+Math.random()*(L.y[1]-L.y[0])),
+      v: L.v[0]+Math.random()*(L.v[1]-L.v[0]), ph: Math.random()*7, amp: 3+Math.random()*5 });
+  });
+  let last = performance.now();
+  function fr(t){
+    const dt = Math.min(.05,(t-last)/1000); last = t; const tm = t/1000;
+    const wind = Math.sin(tm*.18)*18;
+    g.clearRect(0,0,W,H);
+    for(const c of cl){
+      c.x += (c.v + wind*c.z)*dt;
+      const sw = c.p.width*c.sc, sh = c.p.height*c.sc;
+      if(c.x > W+sw){ c.x = -sw - Math.random()*140; c.y = H*(.04+Math.random()*.5); }
+      if(c.x < -sw-200){ c.x = W + Math.random()*120; }
+      g.globalAlpha = c.a; g.drawImage(c.p, c.x, c.y + Math.sin(tm*.25+c.ph)*c.amp, sw, sh);
+    }
+    g.globalAlpha = 1;
+    if(!rm) requestAnimationFrame(fr);
+  }
+  requestAnimationFrame(t => { last = t; fr(t); });
+
+  /* ================= RENDER TIM ================= */
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+  function socials(m){
+    let s = '<div class="socials">';
+    if (m.wa) s += '<a class="s-btn wa" href="https://wa.me/' + encodeURIComponent(m.wa) + '" target="_blank" rel="noopener" title="WhatsApp" aria-label="WhatsApp ' + esc(m.name) + '"><i class="fa-brands fa-whatsapp"></i></a>';
+    if (m.tg) s += '<a class="s-btn tg" href="https://t.me/' + encodeURIComponent(m.tg) + '" target="_blank" rel="noopener" title="Telegram" aria-label="Telegram ' + esc(m.name) + '"><i class="fa-brands fa-telegram"></i></a>';
+    if (m.web) s += '<a class="s-btn web" href="' + esc(m.web) + '" target="_blank" rel="noopener" title="Website" aria-label="Website ' + esc(m.name) + '"><i class="fa-solid fa-globe"></i></a>';
+    return s + '</div>';
+  }
+
+  function card(m, i){
+    const ini = esc((m.name || '?').trim().charAt(0).toUpperCase());
+    return '<article class="mcard reveal' + (m.lead ? ' lead' : '') + '" style="--d:' + (.18 + i*.09).toFixed(2) + 's">' +
+      '<div class="ava" data-ini="' + ini + '">' +
+        (m.img ? '<img src="' + esc(m.img) + '" alt="' + esc(m.name) + '" loading="lazy">' : ini) +
+        (m.lead ? '<span class="crown"><i class="fa-solid fa-crown"></i></span>' : '') +
+      '</div>' +
+      '<div class="body">' +
+        '<div class="meta"><b>' + esc(m.name) + '</b><span class="role">' + esc(m.role || 'Anggota') + '</span></div>' +
+        '<p>' + esc(m.desc || '') + '</p>' +
+        socials(m) +
+      '</div>' +
+      '<span class="st' + (m.online ? '' : ' off') + '"><i></i>' + (m.online ? 'ON' : 'OFF') + '</span>' +
+    '</article>';
+  }
+
+  const listEl = document.getElementById('teamList');
+  listEl.innerHTML = TEAM.map(card).join('');
+
+  // Foto gagal dimuat → fallback inisial
+  listEl.querySelectorAll('.ava img').forEach(im => im.addEventListener('error', () => {
+    const w = im.parentElement;
+    w.textContent = w.dataset.ini || '★';
+  }));
+
+  // Statistik hero
+  document.getElementById('stMembers').textContent = TEAM.length;
+  document.getElementById('stOnline').textContent = TEAM.filter(m => m.online).length;
+})();
+</script>
+</body>
+</html>
