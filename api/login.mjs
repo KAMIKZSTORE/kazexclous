@@ -14,7 +14,7 @@ export default async function handler(req, res) {
   if (req.method === 'POST') {
     const { username, password } = await readJson(req);
     if (checkCredentials(String(username || ''), String(password || ''))) {
-      res.setHeader('Set-Cookie', makeCookie());
+      res.setHeader('Set-Cookie', makeCookie(req));
       return json(res, 200, { ok: true, authed: true });
     }
     await new Promise(r => setTimeout(r, 700)); // perlambat brute force
