@@ -4,6 +4,7 @@
     { "source": "/testi/store/kazex", "destination": "/testi.html" },
     { "source": "/share/link/testi", "destination": "/testi.html" },
     { "source": "/share/link/testi/:code", "destination": "/testi.html?share=:code" },
+    { "source": "/team/kazex/project", "destination": "/team.html" },
     { "source": "/admin/login", "destination": "/admin.html" },
     { "source": "/admin/panel", "destination": "/admin.html" },
     { "source": "/admin", "destination": "/admin.html" }
